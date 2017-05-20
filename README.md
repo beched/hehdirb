@@ -72,7 +72,7 @@ TOTAL SPEED 461.61 rps
 ```
 Scanning with MySQL logging:
 ```
-$ python hehdirb.py -u https://ya.ru/ -d /home/beched/Desktop/TOOLS/web/tzar2.txt -t 200 -k 100 -r '{"host": "localhost", "user": "superdirb", "passwd": "***", "db": "superdirb"}'
+$ python hehdirb.py -u https://ya.ru/ -d tzar2.txt -t 200 -k 100 -r '{"host": "localhost", "user": "superdirb", "passwd": "***", "db": "superdirb"}'
 WARNING:root:Calculated Keep-Alive for https://ya.ru/: 100
 WARNING:root:Path https://ya.ru:443/, response code 200, content-length 10424, content-type text/html; charset=UTF-8
 . . .
