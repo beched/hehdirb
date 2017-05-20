@@ -65,5 +65,6 @@ class FastGet:
             except Exception as e:
                 logging.error(str(e))
             finally:
-                self.conn.commit()
+                if self.report_db:
+                    self.conn.commit()
                 self.queue.task_done()
