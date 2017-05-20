@@ -1,10 +1,13 @@
 hehreq
 ============
 
-A small library with a couple of classes for asynchronous session-aware HTTP requests pushing.
+A small library with a couple of classes for asynchronous session-aware HTTP requests pushing with pipelining.
 Maximum requests number during single Keep-Alive session is calculated using dichotomy.
 
 Pydoc-generated documentation for the main class (hehreq.py) can be found in hehreq.html.
+
+The FastGet and MassGet classes are hehreq wrappers for gevent-driven single and multiple hosts processing respectively.
+They use Python logging interface to log stuff. They do not log 302 and 404 responses by default (see FastGet.report).
 
 Prefix heh- in the name is from Avar "hehgo", which literally means "fast".
 
@@ -38,7 +41,6 @@ $ python hehdirb.py -u https://ya.ru/ -d tzar2.txt -t 200
 WARNING:root:Calculated Keep-Alive: 100
 WARNING:root:Path https://ya.ru:443/, response code 200, content-length 10429, content-type text/html; charset=UTF-8
 . . .
-WARNING:root:Path https://ya.ru:443/mobile, response code 302, content-length 154, content-type text/html
 TOTAL TIME 41.19 sec
 TOTAL SPEED 227.73 rps
 ```
@@ -102,7 +104,7 @@ mysql> select * from scan_2017_05_20_224525 limit 1,1;
 ```
 Using the viewdirb.py to get csv log:
 ```
-$  python viewdirb.py /tmp/out.csv
+$ python viewdirb.py /tmp/out.csv
 [*] Tables:
 1) scan_2017_05_17_225245
 2) scan_2017_05_20_224254
