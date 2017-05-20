@@ -24,6 +24,7 @@ class HehReq:
         self.timeout = timeout
         socket.setdefaulttimeout(timeout)
         self.keepalive = keepalive
+        self.buf = ''
         self.connect()
 
     def connect(self):
@@ -47,15 +48,16 @@ class HehReq:
         self.ssock.close()
         self.connect()
 
-    def recv_until(self, find):
+    def recv_until_simple(self, find):
         '''
-        Standard method for reading from socket until some string
+        One-by-one method for reading from socket until some string
         Raise an exception if nothing could be read
         :param find: string to reach
         :return:
         '''
         buf = ''
         while True:
+            # TODO: this is too simple and slow
             chunk = self.ssock.recv(1)
             if chunk == '':
                 raise EnfOfStream
@@ -64,6 +66,25 @@ class HehReq:
             if buf[-len(find):] == find:
                 break
         return buf
+
+    def recv_until(self, find):
+        '''
+        Buffering method for reading from socket until some string
+        Raise an exception if nothing could be read
+        :param find: string to reach
+        :return:
+        '''
+        while True:
+            try:
+                i = self.buf.index(find)
+                res, self.buf = self.buf[:i + len(find)], self.buf[i + len(find):]
+                return res
+            except Exception as e:
+                pass
+            chunk = self.ssock.recv(4096)
+            if chunk == '':
+                raise EnfOfStream
+            self.buf += chunk
 
     def encode(self, path):
         '''
