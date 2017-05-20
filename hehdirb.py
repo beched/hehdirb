@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
 from gevent import monkey
+
 monkey.patch_all()
 
 import json
@@ -19,6 +23,7 @@ def encode(path):
     path = path.replace(' ', '+')
     path = path.replace('#', '%23')
     return path
+
 
 if __name__ == '__main__':
     parser = OptionParser()

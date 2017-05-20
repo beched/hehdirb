@@ -9,6 +9,7 @@ import MySQLdb
 
 from .hehreq import HehReq
 
+
 class FastGet:
     def __init__(self, url, dic, threads=100, report_db=False, keepalive=None):
         self.url = url

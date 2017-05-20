@@ -2,6 +2,7 @@ import re
 import socket
 import ssl
 
+
 class EnfOfStream(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
@@ -59,6 +60,7 @@ class HehReq:
             if chunk == '':
                 raise EnfOfStream
             buf += chunk
+            # TODO: buf should be sliced for anti-DoS if we do GET
             if buf[-len(find):] == find:
                 break
         return buf

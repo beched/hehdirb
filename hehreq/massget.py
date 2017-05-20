@@ -5,6 +5,7 @@ from gevent.queue import JoinableQueue
 
 from .fastget import FastGet
 
+
 class MassGet:
     def __init__(self, urls, dic, threads=10, report_db=False, keepalive=None, each_threads=10):
         self.dic = dic
