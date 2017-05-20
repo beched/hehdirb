@@ -8,6 +8,9 @@ Pydoc-generated documentation for the main class (hehreq.py) can be found in heh
 
 The FastGet and MassGet classes are hehreq wrappers for gevent-driven single and multiple hosts processing respectively.
 They use Python logging interface to log stuff. They do not log 302 and 404 responses by default (see FastGet.report).
+There's also an option to insert results into MySQL database for further analysis and filtering.
+
+Small HTTP HEAD packet is hardcoded into the HehReq.get method. Automatic GET/HEAD switching has not yet been implemented.
 
 Prefix heh- in the name is from Avar "hehgo", which literally means "fast".
 
@@ -16,7 +19,7 @@ hehdirb
 
 A wrapper which utilizes the capabilities of hehreq.
 
-It also contains dirty script viewdirb.py for generating csv-reports of directory busting.
+It also contains dirty script viewdirb.py for generating csv-reports of directory busting from MySQL database.
 ```
 Usage: hehdirb.py [options]
 

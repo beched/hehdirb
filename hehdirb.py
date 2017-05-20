@@ -9,6 +9,17 @@ from optparse import OptionParser
 
 from hehreq import *
 
+
+def encode(path):
+    '''
+    Partial urlencode
+    :param path: URL
+    :return:
+    '''
+    path = path.replace(' ', '+')
+    path = path.replace('#', '%23')
+    return path
+
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-d', '--dictionary', dest='dic',
@@ -35,7 +46,7 @@ if __name__ == '__main__':
     if not opts.dic:
         parser.print_help()
         quit()
-    opts.dic = [x.strip().lstrip('/') for x in open(opts.dic, 'r').readlines()]
+    opts.dic = [encode(x.strip().lstrip('/')) for x in open(opts.dic, 'r').readlines()]
     if opts.url:
         FastGet(opts.url, opts.dic, opts.threads, opts.report_db, opts.keepalive)
     elif opts.urls:

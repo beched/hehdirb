@@ -80,6 +80,7 @@ class HehReq:
         :return:
         '''
         # TODO: Adding Connection:Keep-Alive may be needed in some cases...
+        # TODO: Switching GET / HEAD ?
         packet = 'HEAD /%s HTTP/1.1\r\nHost:%s\r\n\r\n' % (path, self.host)
         self.ssock.send(packet)
 
