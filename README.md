@@ -67,8 +67,8 @@ WARNING:root:Calculated Keep-Alive for https://mail.ru/: 100
 WARNING:root:Path https://ya.ru:443/, response code 200, content-length 10428, content-type text/html; charset=UTF-8
 WARNING:root:Path https://mail.ru:443/, response code 200, content-length 253460, content-type text/html; charset=utf-8
 . . .
-TOTAL TIME 20.32 sec
-TOTAL SPEED 461.61 rps
+TOTAL TIME 19.90 sec
+TOTAL SPEED 942.93 rps
 ```
 Scanning with MySQL logging:
 ```

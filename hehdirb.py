@@ -48,11 +48,16 @@ if __name__ == '__main__':
         quit()
     opts.dic = [encode(x.strip().lstrip('/')) for x in open(opts.dic, 'r').readlines()]
     if opts.url:
+        num = 1
         FastGet(opts.url, opts.dic, opts.threads, opts.report_db, opts.keepalive)
     elif opts.urls:
         opts.urls = [x.strip() for x in open(opts.urls, 'r').readlines()]
+        num = len(opts.urls)
         MassGet(opts.urls, opts.dic, opts.threads, opts.report_db, opts.keepalive, opts.each_threads)
+    else:
+        parser.print_help()
+        quit()
 
     tt = time.time() - st
     print 'TOTAL TIME %.2f sec' % tt
-    print 'TOTAL SPEED %.2f rps' % (len(opts.dic) / tt)
+    print 'TOTAL SPEED %.2f rps' % (num * len(opts.dic) / tt)
