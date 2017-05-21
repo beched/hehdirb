@@ -37,6 +37,8 @@ Options:
                         Keep-Alive value (otherwise calculated)
   -r REPORT_DB, --report-db=REPORT_DB
                         JSON-encoded credentials (host, user, passwd, db)
+  -v VERBOSE, --verbose=VERBOSE
+                        Verbosity (0-2)
 ```
 Single host scanning with automatic session handling:
 ```

@@ -9,7 +9,7 @@ class EnfOfStream(Exception):
 
 
 class HehReq:
-    def __init__(self, host, port=443, scheme='https', keepalive=100, timeout=5):
+    def __init__(self, host, port=443, scheme='https', keepalive=100, timeout=10):
         '''
         Constructor, automatic connection
         :param host: hostname
@@ -133,8 +133,14 @@ class HehReq:
         :param test: needed for keepalive calculation
         :return:
         '''
-        for path in paths:
-            self.get(path)
+        for i, path in enumerate(paths):
+            try:
+                self.get(path)
+            except:
+                if test:
+                    raise EndOfStream
+                    quit()
+                return
         for i in xrange(len(paths)):
             try:
                 t = self.recv_until('\r\n\r\n')

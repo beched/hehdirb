@@ -6,10 +6,13 @@ from gevent.queue import JoinableQueue
 from .fastget import FastGet
 
 
-class MassGet:
+class MassGet(FastGet):
     def __init__(self, urls, dic, threads=10, report_db=False, keepalive=None, each_threads=10):
         self.dic = dic
         self.report_db = report_db
+        self.table = None
+        if report_db:
+            self.sql_conn(report_db)
         self.keepalive = keepalive
         self.each_threads = each_threads
         self.queue = JoinableQueue()
@@ -21,8 +24,8 @@ class MassGet:
         while not self.queue.empty():
             url = self.queue.get()
             try:
-                FastGet(url, self.dic, self.each_threads, self.report_db, self.keepalive)
+                FastGet(url, self.dic, self.each_threads, self.report_db, self.keepalive, self.table)
             except Exception as e:
-                logging.error(str(e))
+                logging.error('Worker global exception for %s: %s' % (url, e))
             finally:
                 self.queue.task_done()

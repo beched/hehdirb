@@ -9,27 +9,31 @@ import MySQLdb
 
 from .hehreq import HehReq
 
-
 class FastGet:
-    def __init__(self, url, dic, threads=100, report_db=False, keepalive=None):
+    def __init__(self, url, dic, threads=100, report_db=False, keepalive=None, table_name=None):
         self.url = url
         parts = urlparse(url)
         self.scheme, self.host, self.port = parts.scheme, parts.hostname, parts.port
         if not self.port:
             self.port = 443 if self.scheme == 'https' else 80
 
-        self.report_db = report_db
-        if report_db:
-            self.sql_conn(report_db)
-
         self.keepalive = keepalive
+        try:
+            instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive)
+        except Exception as e:
+            logging.error('Init exception for %s: %s' % (self.url, e))
+            return
         if not keepalive:
-            instance = HehReq(self.host, int(self.port), self.scheme)
             self.keepalive = instance.detect_keepalive()
         if self.keepalive == 0:
-            logging.error('Keep-Alive value appears to be 0, check the connection')
-            quit()
+            logging.error('Keep-Alive value for %s appears to be 0, check the connection' % url)
+            return
         logging.warning('Calculated Keep-Alive for %s: %s' % (url, self.keepalive))
+
+        self.report_db = report_db
+        if report_db:
+            self.table = table_name
+            self.sql_conn(report_db)
 
         self.queue = JoinableQueue()
         [self.queue.put(dic[i:i + self.keepalive]) for i in xrange(0, len(dic), self.keepalive)]
@@ -39,10 +43,11 @@ class FastGet:
     def sql_conn(self, report_db):
         self.conn = MySQLdb.connect(report_db['host'], report_db['user'], report_db['passwd'], report_db['db'])
         self.cur = self.conn.cursor()
-        self.table = 'scan_%s' % datetime.strftime(datetime.now(), '%Y_%m_%d_%H%M%S')
-        self.cur.execute(
-            'create table %s(scheme varchar(16), host varchar(128), port smallint, uri varchar(128),\
-            code smallint, size int, type varchar(128))' % self.table)
+        if not self.table:
+            self.table = 'scan_%s' % datetime.strftime(datetime.now(), '%Y_%m_%d_%H%M%S')
+            self.cur.execute(
+                'create table %s(scheme varchar(16), host varchar(128), port smallint, uri varchar(128),\
+                code smallint, size int, type varchar(128))' % self.table)
 
     def report(self, result):
         if result[1] not in [302, 404]:
@@ -56,7 +61,7 @@ class FastGet:
         try:
             instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive)
         except Exception as e:
-            logging.error('Exception for %s: %s' % (self.url, e))
+            logging.error('Worker init exception for %s: %s' % (self.url, e))
             return
         while not self.queue.empty():
             paths = self.queue.get()
@@ -64,7 +69,7 @@ class FastGet:
                 for x in instance.bulk_get(paths):
                     self.report(x)
             except Exception as e:
-                logging.error(str(e))
+                logging.error('Worker loop exception for %s: %s' % (self.url, e))
             finally:
                 if self.report_db:
                     self.conn.commit()

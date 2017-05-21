@@ -6,6 +6,7 @@ from gevent import monkey
 monkey.patch_all()
 
 import json
+import logging
 import sys
 import time
 
@@ -41,10 +42,19 @@ if __name__ == '__main__':
                       help='Keep-Alive value (otherwise calculated)')
     parser.add_option('-r', '--report-db', dest='report_db', default=False,
                       help='JSON-encoded credentials (host, user, passwd, db)')
+    parser.add_option('-v', '--verbose', dest='verbose', default=2, type='int',
+                      help='Verbosity (0-2)')
 
     (opts, _) = parser.parse_args()
     sys.setrecursionlimit(10000)
     st = time.time()
+
+    if opts.verbose == 0:
+        logging.basicConfig(level=logging.CRITICAL)
+    elif opts.verbose == 1:
+        logging.basicConfig(level=logging.ERROR)
+    elif opts.verbose == 2:
+        logging.basicConfig(level=logging.WARNING)
 
     if opts.report_db:
         opts.report_db = json.loads(opts.report_db)
