@@ -21,6 +21,7 @@ class HehReq:
         self.host = host
         self.port = port
         self.scheme = scheme
+        self.template = 'HEAD /%s HTTP/1.1\r\nHost:%s\r\n\r\n'
         self.timeout = timeout
         socket.setdefaulttimeout(timeout)
         self.keepalive = keepalive
@@ -104,7 +105,7 @@ class HehReq:
         '''
         # TODO: Adding Connection:Keep-Alive may be needed in some cases...
         # TODO: Switching GET / HEAD ?
-        packet = 'HEAD /%s HTTP/1.1\r\nHost:%s\r\n\r\n' % (path, self.host)
+        packet = self.template % (path, self.host)
         self.ssock.send(packet)
 
     def detect_keepalive(self):
@@ -133,14 +134,19 @@ class HehReq:
         :param test: needed for keepalive calculation
         :return:
         '''
-        for i, path in enumerate(paths):
-            try:
-                self.get(path)
-            except:
-                if test:
+        if test:
+            for i, path in enumerate(paths):
+                try:
+                    self.get(path)
+                except:
                     raise EndOfStream
                     quit()
-                return
+                    return
+        else:
+            packet = ''
+            for path in paths:
+                packet += self.template % (path, self.host)
+            self.ssock.send(packet)
         for i in xrange(len(paths)):
             try:
                 t = self.recv_until('\r\n\r\n')

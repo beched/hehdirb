@@ -36,9 +36,9 @@ if __name__ == '__main__':
                       help='input file with URLs')
     parser.add_option('-t', '--threads', dest='threads', default=100, type='int',
                       help='number of global workers')
-    parser.add_option('-e', '--each-threads', dest='each_threads', default=10, type='int',
+    parser.add_option('-e', '--each-threads', dest='each_threads', default=30, type='int',
                       help='number of workers for each host')
-    parser.add_option('-k', '--keep-alive', dest='keepalive', default=None, type='int',
+    parser.add_option('-k', '--keep-alive', dest='keepalive', default=100, type='int',
                       help='Keep-Alive value (otherwise calculated)')
     parser.add_option('-r', '--report-db', dest='report_db', default=False,
                       help='JSON-encoded credentials (host, user, passwd, db)')

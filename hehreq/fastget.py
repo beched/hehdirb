@@ -5,7 +5,10 @@ from gevent.queue import JoinableQueue
 from datetime import datetime
 from urlparse import urlparse
 
-import MySQLdb
+try:
+    import MySQLdb
+except:
+    pass
 
 from .hehreq import HehReq
 
