@@ -9,7 +9,7 @@ class EnfOfStream(Exception):
 
 
 class HehReq:
-    def __init__(self, host, port=443, scheme='https', keepalive=100, timeout=10):
+    def __init__(self, host, port=443, scheme='https', keepalive=100, timeout=10, path=''):
         '''
         Constructor, automatic connection
         :param host: hostname
@@ -21,7 +21,10 @@ class HehReq:
         self.host = host
         self.port = port
         self.scheme = scheme
-        self.template = 'HEAD /%s HTTP/1.1\r\nHost:%s\r\n\r\n'
+        self.path = path
+        if r'%s' not in self.path:
+            self.path = self.path.rstrip('/') + r'/%s'
+        self.template = 'HEAD %s HTTP/1.1\r\nHost:%s\r\n\r\n'
         self.timeout = timeout
         socket.setdefaulttimeout(timeout)
         self.keepalive = keepalive
@@ -105,6 +108,7 @@ class HehReq:
         '''
         # TODO: Adding Connection:Keep-Alive may be needed in some cases...
         # TODO: Switching GET / HEAD ?
+        path = self.path % path
         packet = self.template % (path, self.host)
         self.ssock.send(packet)
 
@@ -145,7 +149,7 @@ class HehReq:
         else:
             packet = ''
             for path in paths:
-                packet += self.template % (path, self.host)
+                packet += self.template % (self.path % path, self.host)
             self.ssock.send(packet)
         for i in xrange(len(paths)):
             try:
@@ -159,7 +163,7 @@ class HehReq:
                     contype = re.search(r'Type\: (.+)', t).group(1).strip()
                 except:
                     contype = ''
-                yield (paths[i], code, length, contype)
+                yield (self.path % paths[i], code, length, contype)
             except EnfOfStream:
                 if test:
                     quit()

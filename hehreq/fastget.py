@@ -16,16 +16,18 @@ class FastGet:
     def __init__(self, url, dic, threads=100, report_db=False, keepalive=None, table_name=None):
         self.url = url
         parts = urlparse(url)
-        self.scheme, self.host, self.port = parts.scheme, parts.hostname, parts.port
+        self.scheme, self.host, self.port, self.path = parts.scheme, parts.hostname, parts.port, parts.path
         if not self.port:
             self.port = 443 if self.scheme == 'https' else 80
 
         self.keepalive = keepalive
         try:
-            instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive)
+            instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive, path=self.path)
         except Exception as e:
             logging.error('Init exception for %s: %s' % (self.url, e))
             return
+        self.IGNORE_CODES = [400, 403, 404]
+        self.IGNORE_CODES += [x[1] for x in instance.bulk_get('/kajshdkajsdhkquwehiqubwdkjnmnzcxbfvkjhsdbfiqujdsf')]
         if not keepalive:
             self.keepalive = instance.detect_keepalive()
         if self.keepalive == 0:
@@ -53,8 +55,8 @@ class FastGet:
                 code smallint, size int, type varchar(128))' % self.table)
 
     def report(self, result):
-        if result[1] not in [302, 404]:
-            logging.warning('Path %s://%s:%s/%s, response code %s, content-length %s, content-type %s' % (
+        if result[1] not in self.IGNORE_CODES:
+            logging.warning('Path %s://%s:%s%s , response code %s, content-length %s, content-type %s' % (
                 self.scheme, self.host, self.port, result[0], result[1], result[2], result[3]))
         if self.report_db:
             p = [self.scheme, self.host, self.port] + list(result)
@@ -62,7 +64,7 @@ class FastGet:
 
     def worker(self):
         try:
-            instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive)
+            instance = HehReq(self.host, int(self.port), self.scheme, self.keepalive, path=self.path)
         except Exception as e:
             logging.error('Worker init exception for %s: %s' % (self.url, e))
             return
